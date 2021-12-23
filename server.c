@@ -20,7 +20,12 @@ int ft_pow(int i, int num)
     int x;
 
     x = 2;
-    while (num != -1)
+    if (num == 0)
+        return (1);
+    if (num ==1)
+        return (2);
+    printf ("num= %d\n", num);
+    while (num != 0)
     {
         x = x * i;
         num--;
@@ -30,30 +35,20 @@ int ft_pow(int i, int num)
 
 static void    sig1(int sig, siginfo_t *info, void *context)
 {
-    (void) sig;
     (void) *context;
-    static int x;
-    static int check;
+    (void) *info;
+    static char c;
+    static int i;
 
-    printf ("check= %d\n", check);
-    sleep(5);
-    if (sig == SIGUSR2)
+    //printf ("check2= %d\n", info->si_pid);
+    if (sig == SIGUSR1)
+        c = (c | (1 << i));
+    i++;
+    if (i == 8)
     {
-        printf ("sig= %d\n", sig);
-        check++;
-    }
-    else
-    {
-        x += ft_pow(2, check);
-        check++;
-        kill (info->si_pid, SIGUSR1);
-        if (check == 8)
-        {
-            printf("x2= %c\n", x);
-            check = 0;
-            x = 0;
-            kill (info->si_pid, SIGUSR1);
-        }
+        i = 0;
+        write (1, &c, 1);
+        c = 0;
     }
 }
 
@@ -70,18 +65,16 @@ static void    sig1(int sig, siginfo_t *info, void *context)
 int main()
 {
     struct sigaction one;
-    struct sigaction zero;
+ //   struct sigaction zero;
 
     one.sa_sigaction = &sig1;
     one.sa_flags = SA_SIGINFO;
 
-    zero.sa_sigaction = &sig1;
-    zero.sa_flags = SA_SIGINFO;
+    // zero.sa_sigaction = &sig1;
+    // zero.sa_flags = SA_SIGINFO;
     printf("Server PID: %d\n", getpid());
-    if (sigaction(SIGUSR1, &one, NULL) < 0)
-        printf ("Error1");
-    if (sigaction(SIGUSR2, &one, NULL) < 0)
-        printf ("Error1");
+    sigaction(SIGUSR1, &one, NULL);
+    sigaction(SIGUSR2, &one, NULL);
     while(1)
         pause();
     return (0);
