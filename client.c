@@ -5,13 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mmeredit <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/16 17:45:26 by mmeredit          #+#    #+#             */
-/*   Updated: 2021/12/16 17:45:28 by mmeredit         ###   ########.fr       */
+/*   Created: 2021/12/25 15:24:04 by mmeredit          #+#    #+#             */
+/*   Updated: 2021/12/25 15:24:47 by mmeredit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
-// #include "ft_printf"
 #include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
@@ -50,35 +49,34 @@ void checkpid (int sig, siginfo_t *info, void *context)
 {
     (void) *info;
     (void) *context;
-    //sleep(5);
     printf ("Что за сигнал %d\n", sig);
 }
 
-static void    mystr(char str, int pid)
+static void    mystr(char *str, int pid)
 {
     static char c;
     static int  i;
 
-    printf ("PID= %d\n", pid);
-    i = 0;
-    c = str;
-    while (i < 8)
+    while (*str)
     {
-        if (c & (1 << i))
+        c = *str;
+        while (i < 8)
         {
-            kill (pid, SIGUSR1);
-            printf ("1\n");
+            if (c & (1 << i))
+                kill (pid, SIGUSR1);
+            else
+                kill (pid, SIGUSR2);
+            i++;
+            usleep(25);
         }
-        else
-        {
-            kill (pid, SIGUSR2);
-            printf ("0\n");
-        }
-        i++;
-        usleep(1000);
+        i = 0;
+        str++;
     }
-    c = 0;
-  //  printf ("%d\n", i);
+    while (i++ < 8)
+    {
+        kill (pid, SIGUSR2);
+        usleep(25);
+    }
 }
 
 size_t  ft_strlen(const char *s)
@@ -94,19 +92,11 @@ size_t  ft_strlen(const char *s)
 int main(int pd, char **str)
 {
     pid_t pid;
-    int n;
 
     (void) pid;
     if (pd != 3)
         return (1);
-    n = ft_strlen(str[2]);
-   // printf ("%d\n", n);
-    while (n != 0)
-    {
-        //printf("%c\n", *(str[2]));
-        mystr(*(str[2]), ft_atoi(str[1]));
-        str[2]++;
-        n--;
-    }
+    mystr(str[2], ft_atoi(str[1]));
     return (0);
 }
+
