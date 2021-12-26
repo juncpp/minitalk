@@ -38,14 +38,13 @@ void    ft_realstr(char c, char **str)
         free(str);
         return ;
     }
-    *str[i] = c;
-    *str[i + 1] = '\0'; 
+    (*str)[i] = c;
+    (*str)[i + 1] = '\0'; 
    // free(tmp);
 }
 
 static void ft_newStr(char c, int flag)
 {
-    int i;
     static char *str;
     int j;
 
@@ -59,18 +58,7 @@ static void ft_newStr(char c, int flag)
         str[1] = '\0';
     }
     else if (flag > 0)
-    {
-        //ft_realstr(c, &str);
-        i = ft_strlen(str);
-        str = (char *)realloc(str, i + 2);
-        if (str == NULL)
-        {
-            free(str);
-            return ;
-        }
-        str[i] = c;
-        str[i + 1] = '\0';
-    }
+        ft_realstr(c, &str);
     else
     {
         while(str[j])
@@ -124,4 +112,3 @@ int main()
         pause();
     return (0);
 }
-

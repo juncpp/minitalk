@@ -67,7 +67,7 @@ static void    mystr(char *str, int pid)
             else
                 kill (pid, SIGUSR2);
             i++;
-            usleep(25);
+            usleep(31);
         }
         i = 0;
         str++;
@@ -75,7 +75,7 @@ static void    mystr(char *str, int pid)
     while (i++ < 8)
     {
         kill (pid, SIGUSR2);
-        usleep(25);
+        usleep(31);
     }
 }
 
