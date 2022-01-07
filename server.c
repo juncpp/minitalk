@@ -15,35 +15,46 @@
 #include <unistd.h>
 #include <signal.h>
 
-int  ft_strlen(const char *s)
+
+char    *ft_copy(char *dest, char *src, char c)
 {
-    int  i;
-
-    i = 0;
-    while (s[i] != '\0')
-        i++;
-    return (i);
-}
-
-
-void    ft_realstr(char c, char **str)
-{
-    //char    *tmp;
     int i;
 
-    i = ft_strlen(*str);
-    *str = (char *)realloc(*str, i + 2);
+    i = 0;
+    while (src[i] != '\0')
+    {
+        dest[i] = src[i];
+        i++;
+    }
+    dest[i] = c;
+    dest[i + 1] = '\0';
+    return (dest);
+}
+
+char    *ft_realloc(char *str, int flag, char c)
+{
+    char    *tmp;
+
+    tmp = (char *)malloc(flag);
+    if (tmp == NULL)
+        return (NULL);
+    tmp = ft_copy(tmp, str, c);
+    return (tmp);
+}
+
+void    ft_realstr(char c, char **str, int flag)
+{
+    *str = (char *)ft_realloc(*str, flag + 2, c);
     if (*str == NULL)
     {
         free(str);
         return ;
     }
-    (*str)[i] = c;
-    (*str)[i + 1] = '\0'; 
-   // free(tmp);
+    (*str)[flag] = c;
+    (*str)[flag + 1] = '\0'; 
 }
 
-static void ft_newStr(char c, int flag)
+void ft_newStr(char c, int flag)
 {
     static char *str;
     int j;
@@ -58,7 +69,7 @@ static void ft_newStr(char c, int flag)
         str[1] = '\0';
     }
     else if (flag > 0)
-        ft_realstr(c, &str);
+        ft_realstr(c, &str, flag);
     else
     {
         while(str[j])
@@ -71,20 +82,25 @@ static void ft_newStr(char c, int flag)
     }
 }
 
-static void    sig1(int sig, siginfo_t *info, void *context)
+static inline void    sig1(int sig, siginfo_t *info, void *context)
 {
-    (void) *context;
+    (void) context;
     (void) *info;
     static char c;
     static int i;
     static int flag;
-  //  static char *str;
 
     if (sig == SIGUSR1)
         c = (c | (1 << i));
     i++;
     if (i == 8)
     {
+        // i = 0;
+        // if (c != 0)
+        //     write (1, &c, 1);
+        // else
+        //     write (1, &"\n", 1);
+        // c = 0;
         i = 0;
         if (c == 0)
         {

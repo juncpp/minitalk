@@ -48,34 +48,23 @@ int ft_atoi(const char *str)
 void checkpid (int sig, siginfo_t *info, void *context)
 {
     (void) *info;
-    (void) *context;
-    printf ("Что за сигнал %d\n", sig);
+    (void) context;
+    (void) sig;
 }
 
-static void    mystr(char *str, int pid)
+void    mystr(char c, int pid)
 {
-    static char c;
-    static int  i;
+    int  i;
 
-    while (*str)
+    i = 0;
+    while (i < 8)
     {
-        c = *str;
-        while (i < 8)
-        {
-            if (c & (1 << i))
-                kill (pid, SIGUSR1);
-            else
-                kill (pid, SIGUSR2);
-            i++;
-            usleep(31);
-        }
-        i = 0;
-        str++;
-    }
-    while (i++ < 8)
-    {
-        kill (pid, SIGUSR2);
-        usleep(31);
+        if (c & (1 << i))
+            kill (pid, SIGUSR1);
+        else
+            kill (pid, SIGUSR2);
+        usleep(770);
+        i++;
     }
 }
 
@@ -91,12 +80,14 @@ size_t  ft_strlen(const char *s)
 
 int main(int pd, char **str)
 {
-    pid_t pid;
+    int pid;
 
-    (void) pid;
+    pid = ft_atoi(str[1]);
     if (pd != 3)
         return (1);
-    mystr(str[2], ft_atoi(str[1]));
+    while (*(str[2]++) != '\0')
+        mystr(*(str[2]), pid);
+    mystr(0 , ft_atoi(str[1]));
     return (0);
 }
 
