@@ -49,12 +49,17 @@ void	checkpid(int sig, siginfo_t *info, void *context)
 	(void) *info;
 	(void) context;
 	(void) sig;
+	//printf ("Сигнал пришел\n");
 }
 
 void	mystr(char c, int pid)
 {
-	int	i;
+	int					i;
+	struct sigaction	get;
 
+	get.sa_sigaction = &checkpid;
+	get.sa_flags = SA_SIGINFO;
+	sigaction(SIGUSR1, &get, NULL);
 	i = 0;
 	while (i < 8)
 	{
@@ -62,7 +67,8 @@ void	mystr(char c, int pid)
 			kill (pid, SIGUSR1);
 		else
 			kill (pid, SIGUSR2);
-		usleep(770);
+		pause();
+		//usleep(50);
 		i++;
 	}
 }

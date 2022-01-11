@@ -37,19 +37,31 @@ char	*ft_realloc(char *str, int flag, char c)
 	tmp = (char *) malloc(flag);
 	if (tmp == NULL)
 		return (NULL);
-	free(str);
 	tmp = ft_copy(tmp, str, c);
+	free(str);
 	return (tmp);
 }
 
 void	ft_realstr(char c, char **str, int flag)
 {
-	*str = (char *)ft_realloc(*str, flag + 2, c);
-	if (*str == NULL)
+	char	*tmp;
+
+	tmp = (char *) malloc(flag + 2);
+	if (tmp == NULL)
 	{
-		free(str);
+		free(*str);
 		return ;
 	}
+	tmp = ft_copy(tmp, *str, c);
+	free(*str);
+	*str = tmp;
+//	return (tmp);
+//	*str = (char *)ft_realloc(*str, flag + 2, c);
+//	if (*str == NULL)
+//	{
+//		free(str);
+//		return ;
+//	}
 }
 
 void	ft_newstr(char c, int flag)
@@ -87,7 +99,6 @@ void	sig1(int sig, siginfo_t *info, void *context)
 	static int	flag;
 
 	(void) context;
-	(void) *info;
 	if (sig == SIGUSR1)
 		c = (c | (1 << i));
 	i++;
@@ -103,6 +114,8 @@ void	sig1(int sig, siginfo_t *info, void *context)
 			ft_newstr(c, flag++);
 		c = 0;
 	}
+	usleep(150);
+	kill(info->si_pid, SIGUSR1);
 }
 
 int	main()
