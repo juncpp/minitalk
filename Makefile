@@ -10,11 +10,29 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME = minitalk.a
+NAME_S = server
 
-SERVER = server.c
+NAME_C = client
 
-CLIENT = client.c
+SRC_S = server.c
+
+SRC_C = client.c
+
+OBJ_S = server.o
+
+OBJ_C = client.o
+
+OBJ_BONUS_S = server_bonus.o
+
+OBJ_BONUS_C = client_bonus.o
+
+SERVER_BONUS = server_bonus.c
+
+CLIENT_BONUS = client_bonus.c
+
+HDR = minitalk.h
+
+HDR_BONUS = minitalk_bonus.h
 
 CC = cc
 
@@ -22,23 +40,26 @@ RM = rm -f
 
 FLAGS = -Wall -Wextra -Werror
 
-all: server client
+all: $(NAME_S) $(NAME_C)
 
-server: server.o
-	$(CC) -o $@ $<
+$(NAME_S): $(OBJ_S)
+	$(CC) $? -o $@
 
-client: client.o
-	$(CC) -o $@ $<
+$(NAME_C): $(OBJ_C)
+	$(CC) $? -o $@
 
-%.o:%.c 
-	$(CC) -c $(FLAGS) -c $?
+%.o: %.c $(HDR)
+	$(CC) $(FLAGS) -I.$(HDR) -c $< -o $@
+
+bonus:
+	@make OBJ_S="$(OBJ_BONUS_S)" OBJ_C="$(OBJ_BONUS_C)" HDR="$(HDR_BONUS)" all
 
 clean:
-	$(RM) server.o client.o
+	$(RM) *.o
 
 fclean: clean
 	$(RM) server client
 
-re: clean fclean all
+re: fclean all
 
-.PNONY:	all clean fclean re
+.PNONY:	all clean fclean re bonus
