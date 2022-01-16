@@ -108,13 +108,40 @@ void	sig1(int sig, siginfo_t *info, void *context)
 	kill(info->si_pid, SIGUSR1);
 }
 
+void	ft_putNbr(int n)
+{
+	char	x[10];
+	int		i;
+
+	i = 0;
+	x[0] = '\0';
+	if (n < 0)
+	{
+		write(1, "-", 1);
+		x[i++] = (-((n) % 10) + '0');
+		n = -(n / 10);
+	}
+	while (n != 0)
+	{
+		x[i] = ((n % 10) + '0');
+		n = n / 10;
+		i++;
+	}
+	if (i == 0)
+		write (1, "0", 1);
+	while (i > 0)
+		write(1, &x[--i], 1);
+}
+
 int	main()
 {
 	struct sigaction	one;
 
 	one.sa_sigaction = &sig1;
 	one.sa_flags = SA_SIGINFO;
-	printf("Server PID: %d\n", getpid());
+	write (1, "Server PID : ", 13);
+	ft_putNbr(getpid());
+	write (1, "\n", 1);
 	sigaction(SIGUSR1, &one, NULL);
 	sigaction(SIGUSR2, &one, NULL);
 	while (1)
